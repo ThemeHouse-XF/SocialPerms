@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_SocialPerms" title="[⌂] Social Permissions" version_string="1.1.1a" version_id="1447094555" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation>
+    <navigation navigation_id="socialPermissionSets" parent_navigation_id="permissions" display_order="80" link="social-permission-sets" admin_permission_id="socialPermissionSet" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions>
+    <admin_permission admin_permission_id="socialPermissionSet" display_order="3000"/>
+  </admin_permissions>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="th_permissions_pane_socialperms"><![CDATA[<xen:require css="th_option_permissions_socialgroups.css" />
+
+<dl class="ctrlUnit">
+	<dt>{xen:phrase th_extra_permissions_socialperms}:</dt>
+	<dd>
+		<table class="socialGroupsPermissions">
+			<tr class="groupHeading">
+				<th class="groupTitle"></th>
+				<th class="option">{xen:phrase th_member_socialgroups}</th>
+				<th class="option">{xen:phrase th_moderator_socialgroups}</th>
+				<th class="option">{xen:phrase th_creator_socialgroups}</th>
+			</tr>
+			<xen:foreach loop="$permissions" key="$permission_id" value="$permission">
+				<tr class="source">
+					<th class="groupTitle">{$permission.title}:</th>
+					<td><label class=""><input type="checkbox" name="member_permissions[{$permission_id}]" value="1"{xen:checked '{$xenOptions.th_SocialGroups_permissions.1.{$permission_id}} or {$forum.memberPermissions.{$permission_id}}'}{xen:if {$xenOptions.th_SocialGroups_permissions.1.{$permission_id}}, ' disabled="disabled"'}></label></td>
+					<td><label class=""><input type="checkbox" name="moderator_permissions[{$permission_id}]" value="1"{xen:checked '{$xenOptions.th_SocialGroups_permissions.2.{$permission_id}} or {$forum.moderatorPermissions.{$permission_id}}'}{xen:if {$xenOptions.th_SocialGroups_permissions.2.{$permission_id}}, ' disabled="disabled"'}></label></td>
+					<td><label class=""><input type="checkbox" name="creator_permissions[{$permission_id}]" value="1"{xen:checked '{$xenOptions.th_SocialGroups_permissions.3.{$permission_id}} or {$forum.creatorPermissions.{$permission_id}}'}{xen:if {$xenOptions.th_SocialGroups_permissions.3.{$permission_id}}, ' disabled="disabled"'}></label></td>
+				</tr>
+			</xen:foreach>
+		</table>
+		{xen:raw $editLink}
+		<p class="explain">{xen:phrase th_extra_permissions_explain_socialperms}</p>
+	</dd>
+</dl>]]></template>
+    <template title="th_social_permission_set_delete_socialperms"><![CDATA[<xen:title>{xen:phrase th_confirm_deletion_of_social_permission_set_socialperms}: {$socialPermissionSet.title}</xen:title>
+
+<xen:h1>{xen:phrase th_confirm_deletion_of_social_permission_set_socialperms}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:adminlink 'social-permission-sets/edit', $socialPermissionSet}">{$socialPermissionSet.title}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'social-permission-sets/delete', $socialPermissionSet}" class="deleteConfirmForm formOverlay">
+
+	<p>{xen:phrase th_please_confirm_want_to_delete_social_permission_set_socialperms}:</p>
+	<strong><a href="{xen:adminlink 'social-permission-sets/edit', $socialPermissionSet}">{$socialPermissionSet.title}</a></strong>
+
+	<xen:submitunit save="{xen:phrase th_delete_social_permission_set_socialperms}" />
+
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="th_social_permission_set_edit_socialperms"><![CDATA[<xen:require css="th_social_permission_set_socialperms.css" />
+
+<xen:title>{xen:if '{$socialPermissionSet.social_permission_set_id}', '{xen:phrase th_edit_social_permission_set_socialperms}: {$masterTitle}', '{xen:phrase th_create_new_social_permission_set_socialperms}'}</xen:title>
+
+<xen:h1>{xen:if '{$socialPermissionSet.social_permission_set_id}', '{xen:phrase th_edit_social_permission_set_socialperms}: <em>{$masterTitle}</em>', '{xen:phrase th_create_new_social_permission_set_socialperms}'}</xen:h1>
+
+<xen:if is="{$socialPermissionSet.social_permission_set_id}">
+	<xen:topctrl>
+		<a href="{xen:adminlink 'social-permission-sets/export', $socialPermissionSet}" class="button">{xen:phrase th_export_social_permission_set_socialperms}</a>
+	</xen:topctrl>
+</xen:if>
+	
+<xen:if is="{$socialPermissionSet.social_permission_set_id}">
+	<xen:navigation>
+		<xen:breadcrumb href="{xen:adminlink 'social-permission-sets'}#{xen:helper listitemid, $socialPermissionSet.social_permission_set_id}">{$masterTitle}</xen:breadcrumb>
+	</xen:navigation>
+</xen:if>
+
+<xen:form action="{xen:adminlink 'social-permission-sets/save', $socialPermissionSet}"
+	class="AutoValidator"
+	data-fieldValidatorUrl="{xen:adminlink '/validate-field', $socialPermissionSet}"
+	data-redirect="on">
+
+	<ul class="tabs Tabs" data-panes="#socialPermissionSetPanes > li">
+		<li class="active"><a>{xen:phrase th_social_permission_set_options_socialperms}</a></li>
+		<li><a>{xen:phrase th_guest_permissions_socialperms}</a></li>
+		<li><a>{xen:phrase th_awaiting_permissions_socialperms}</a></li>
+		<li><a>{xen:phrase th_invited_permissions_socialperms}</a></li>
+		<li><a>{xen:phrase th_member_permissions_socialperms}</a></li>
+		<li><a>{xen:phrase th_moderator_permissions_socialperms}</a></li>
+		<li><a>{xen:phrase th_creator_permissions_socialperms}</a></li>
+	</ul>
+	
+	<ul id="socialPermissionSetPanes">
+		<li>
+			<xen:textboxunit label="{xen:phrase th_social_permission_set_title_socialperms}:" name="title" value="{$masterTitle}" data-liveTitleTemplate="{xen:if {$socialPermissionSet.social_permission_set_id},
+				'{xen:phrase th_edit_social_permission_set_socialperms}: <em>%s</em>',
+				'{xen:phrase th_create_new_social_permission_set_socialperms}: <em>%s</em>'}" />
+				
+			<xen:textboxunit name="description" value="{$masterDescription}" label="{xen:phrase description}:" hint="{xen:phrase you_may_use_html}" rows="2" inputclass="Elastic" />
+		</li>
+		<li>
+			<xen:include template="th_social_permission_table_socialperms">
+				<xen:map from="$guestPermissions" to="$permissions" />
+				<xen:set var="$group">guest</xen:set>
+			</xen:include>
+		</li>
+		<li>
+			<xen:include template="th_social_permission_table_socialperms">
+				<xen:map from="$memberPermissions" to="$permissions" />
+				<xen:set var="$group">awaiting</xen:set>
+			</xen:include>
+		</li>
+		<li>
+			<xen:include template="th_social_permission_table_socialperms">
+				<xen:map from="$guestPermissions" to="$permissions" />
+				<xen:set var="$group">invited</xen:set>
+			</xen:include>
+		</li>
+		<li>
+			<xen:include template="th_social_permission_table_socialperms">
+				<xen:map from="$memberPermissions" to="$permissions" />
+				<xen:set var="$group">member</xen:set>
+			</xen:include>
+		</li>
+		<li>
+			<xen:include template="th_social_permission_table_socialperms">
+				<xen:map from="$memberPermissions" to="$permissions" />
+				<xen:set var="$group">moderator</xen:set>
+			</xen:include>
+		</li>
+		<li>
+			<xen:include template="th_social_permission_table_socialperms">
+				<xen:map from="$memberPermissions" to="$permissions" />
+				<xen:set var="$group">creator</xen:set>
+			</xen:include>
+		</li>
+	</ul>
+
+	<xen:submitunit>
+		<input type="submit" name="saveexit" value="{xen:phrase save_and_exit}" accesskey="e" class="button primary" id="saveExitButton" />
+		<input type="submit" name="reload" value="{xen:phrase save_changes}" accesskey="s" class="button" id="saveReloadButton" data-ajaxvalue="{xen:phrase save_all_changes}" />
+		<xen:if is="{$socialPermissionSet.social_permission_set_id}">
+			<input type="button" value="{xen:phrase th_delete_social_permission_set_socialperms}..." accesskey="d" class="button OverlayTrigger"
+				data-href="{xen:adminlink social-permission-sets/delete, $socialPermissionSet}" />
+		</xen:if>
+	</xen:submitunit>
+</xen:form>]]></template>
+    <template title="th_social_permission_set_import_socialperms"><![CDATA[<xen:title>{xen:phrase th_import_social_permission_set_socialperms}</xen:title>
+
+<xen:form action="{xen:adminlink social-permission-sets/import}" upload="true">
+
+	<xen:uploadunit label="{xen:phrase import_from_uploaded_xml_file}:" name="upload" />
+		
+	<xen:submitunit save="{xen:phrase import}" />
+
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="th_social_permission_set_list_socialperms"><![CDATA[<xen:title>{xen:phrase th_social_permission_sets_socialperms}</xen:title>
+
+<xen:h1>{xen:phrase th_social_permission_sets_socialperms}</xen:h1>
+
+<xen:topctrl>
+	<a href="{xen:adminlink 'social-permission-sets/import'}" class="button">{xen:phrase th_import_social_permission_set_socialperms}</a>
+	<a href="{xen:adminlink 'social-permission-sets/add'}" class="button">+ {xen:phrase th_create_new_social_permission_set_socialperms}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+
+<xen:form action="{xen:adminlink 'social-permission-sets/toggle'}" class="section AutoValidator">
+
+	<xen:if is="{$socialPermissionSets}">
+		<h2 class="subHeading">
+			<xen:include template="filter_list_controls" />
+			{xen:phrase th_social_permission_sets_socialperms}
+		</h2>
+
+		<ol class="FilterList">
+			<xen:foreach loop="$socialPermissionSets" key="$socialPermissionSetId" value="$socialPermissionSet">
+				<xen:listitem id="{$socialPermissionSetId}"
+					label="{xen:raw $socialPermissionSet.title}"
+					snippet="{$socialPermissionSet.description}"
+					href="{xen:adminlink 'social-permission-sets/edit', $socialPermissionSet}"
+					delete="{xen:adminlink 'social-permission-sets/delete', $socialPermissionSet}"
+					deletehint="{xen:phrase delete}">
+				</xen:listitem>
+			</xen:foreach>
+		</ol>
+
+		<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $socialPermissionSets}</span>', 'total={xen:count $socialPermissionSets}'}</p>
+
+	<xen:else />
+		<div class="noResults">{xen:phrase th_there_are_no_social_permission_sets_socialperms}</div>
+	</xen:if>
+
+</xen:form>]]></template>
+    <template title="th_social_permission_set_socialperms.css"><![CDATA[table.socialPermissionsTable
+{
+	margin-top: 0;
+}
+
+.socialPermissionsTable th
+{
+	display: none;
+}
+
+.socialPermissionsTable td label
+{
+	display: block;
+}]]></template>
+    <template title="th_social_permission_table_socialperms"><![CDATA[<xen:controlunit label="{xen:phrase th_additional_permissions_socialperms}:" class="{$group}Permissions">
+	<xen:hint><br /><label><input type="checkbox" class="CheckAll" data-target="dl.{$group}Permissions" /> {xen:phrase select_all}</label></xen:hint>
+	<xen:html>
+		<table class="dataTable socialPermissionsTable">
+			<colgroup>
+				<col style="">
+				<col style="width: 10%">
+			</colgroup>
+			<tbody>
+				<tr class="dataRow">
+					<th>{xen:phrase permissions}</th>
+					<th class="checkboxColumn">{xen:phrase allow}</th>
+				</tr>
+				<xen:foreach loop="$permissions" key="$permissionId" value="$permission">
+					<tr class="dataRow">
+						<td><label for="ctrl_{$group}Permissions_{$permissionId}">{$permission.label}</label></td>
+						<td class="checkboxColumn"><input id="ctrl_{$group}Permissions_{$permissionId}" type="checkbox" value="1" name="{$group}_permissions[{$permissionId}]" {xen:checked '{$selectedPermissions.{$group}.{$permissionId}}'}>
+					</tr>
+				</xen:foreach>
+			</tbody>
+		</table>
+	</xen:html>
+</xen:controlunit>]]></template>
+  </admin_templates>
+  <admin_template_modifications>
+    <modification template="th_social_category_edit_socialgroups" modification_key="th_socialCategoryEdit_socialPerms" description="Adds permissions checkboxes to social category editor." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:hook name="admin_forum_edit_forum_options">.*)(</xen:hook>)#Us]]></find>
+      <replace><![CDATA[${1}
+<xen:include template="th_permissions_pane_socialperms" />
+${2}]]></replace>
+    </modification>
+  </admin_template_modifications>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="ThemeHouse_SocialGroups_Model_SocialForum" description="ThemeHouse_SocialGroups_Model_SocialForum (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassController" active="0" hint="ThemeHouse_SocialGroups_ControllerAdmin_SocialCategory" description="ThemeHouse_SocialGroups_ControllerAdmin_SocialCategory (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassDataWriter" active="0" hint="XenForo_DataWriter_Forum" description="XenForo_DataWriter_Forum (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassController" active="0" hint="ThemeHouse_SocialGroups_ControllerPublic_SocialCategory" description="ThemeHouse_SocialGroups_ControllerPublic_SocialCategory (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassController" active="0" hint="ThemeHouse_SocialGroups_ControllerPublic_SocialForum" description="ThemeHouse_SocialGroups_ControllerPublic_SocialForum (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassDataWriter" active="0" hint="ThemeHouse_SocialGroups_DataWriter_SocialForum" description="ThemeHouse_SocialGroups_DataWriter_SocialForum (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassController" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassDataWriter" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_LoadClass" callback_method="loadClassModel" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="template_create" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_TemplateCreate" callback_method="templateCreate" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+    <listener event_id="template_hook" execute_order="10" callback_class="ThemeHouse_SocialPerms_Listener_TemplateHook" callback_method="templateHook" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="forum" permission_id="manageSocialPermissions" permission_type="flag" default_value="unset" interface_group_id="thSocialGroupsModerator" display_order="1000"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_socialPermissionSets" version_id="1380627237" version_string="1.0.2"><![CDATA[Social Permission Sets]]></phrase>
+    <phrase title="admin_permission_socialPermissionSet" version_id="1380627237" version_string="1.0.2"><![CDATA[Manage social permission sets]]></phrase>
+    <phrase title="permission_forum_manageSocialPermissions" version_id="0" version_string="1.0.0"><![CDATA[Manage social permissions]]></phrase>
+    <phrase title="th_additional_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Additional Permissions]]></phrase>
+    <phrase title="th_awaiting_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Awaiting Permissions]]></phrase>
+    <phrase title="th_confirm_deletion_of_social_permission_set_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Confirm Deletion of Social Permission Set]]></phrase>
+    <phrase title="th_create_new_social_permission_set_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Create New Social Permission Set]]></phrase>
+    <phrase title="th_creator_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Creator Permissions]]></phrase>
+    <phrase title="th_custom_permissions_explain_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Permissions can be set from the 'Manage Social Permissions' section.]]></phrase>
+    <phrase title="th_custom_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Custom]]></phrase>
+    <phrase title="th_delete_social_permission_set_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Delete Social Permission Set]]></phrase>
+    <phrase title="th_edit_social_permission_set_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Edit Social Permission Set]]></phrase>
+    <phrase title="th_export_social_permission_set_socialperms" version_id="1393583754" version_string="1.1.0"><![CDATA[Export Social Permission Set]]></phrase>
+    <phrase title="th_extra_permissions_explain_socialperms" version_id="1375261505" version_string="1.0.0"><![CDATA[Select the extra permissions given to users who join individual Social Groups within this category. These permissions are on top of any permissions already granted to users for this node.]]></phrase>
+    <phrase title="th_extra_permissions_socialperms" version_id="1375261505" version_string="1.0.0"><![CDATA[Extra Permissions]]></phrase>
+    <phrase title="th_guest_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Guest Permissions]]></phrase>
+    <phrase title="th_import_social_permission_set_socialperms" version_id="1393583754" version_string="1.1.0"><![CDATA[Import Social Permission Set]]></phrase>
+    <phrase title="th_invited_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Invited Permissions]]></phrase>
+    <phrase title="th_manage_social_permissions_socialperms" version_id="0" version_string="1.0.0"><![CDATA[Manage Social Permissions]]></phrase>
+    <phrase title="th_member_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Member Permissions]]></phrase>
+    <phrase title="th_moderator_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Moderator Permissions]]></phrase>
+    <phrase title="th_must_select_social_permission_set_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[You must select a social permission set.]]></phrase>
+    <phrase title="th_please_confirm_want_to_delete_social_permission_set_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Please confirm that you want to delete the following social permission set]]></phrase>
+    <phrase title="th_please_upload_valid_social_permission_set_xml_file_socialperms" version_id="1393583754" version_string="1.1.0"><![CDATA[Please upload a valid social permission set XML file.]]></phrase>
+    <phrase title="th_provided_file_is_not_valid_social_permission_set_xml_socialperms" version_id="1393583754" version_string="1.1.0"><![CDATA[The provided file is not a valid social permission set XML file.]]></phrase>
+    <phrase title="th_requested_social_permission_set_not_found_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[The requested social permission set could not be found.]]></phrase>
+    <phrase title="th_social_forum_permissions_socialperms" version_id="1362255033" version_string="1.0.0"><![CDATA[Social Forum Permissions]]></phrase>
+    <phrase title="th_social_permission_sets_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Social Permission Sets]]></phrase>
+    <phrase title="th_social_permission_set_options_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Social Permission Set Options]]></phrase>
+    <phrase title="th_social_permission_set_subtitle_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Subtitle]]></phrase>
+    <phrase title="th_social_permission_set_title_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Title]]></phrase>
+    <phrase title="th_there_are_no_social_permission_sets_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[There are no social permission sets.]]></phrase>
+    <phrase title="th_update_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[Update Permissions]]></phrase>
+    <phrase title="th_you_do_not_have_permission_to_grant_socialperms" version_id="0" version_string="1.0.0"><![CDATA[You do not have permission to grant the selected permissions.]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="social-permission-sets" class="ThemeHouse_SocialPerms_Route_PrefixAdmin_SocialPermissionSets" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates>
+    <template title="th_social_forum_fields_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[<xen:if is="{$socialPermissionSets}">
+	<xen:foreach loop="$socialPermissionSets" key="$socialPermissionSetId" value="$socialPermissionSet">
+		<li>
+			<label for="ctrl_social_permission_set_id_{$socialPermissionSetId}"><input type="radio" name="social_permission_set_id" value="{$socialPermissionSetId}" id="ctrl_social_permission_set_id_{$socialPermissionSetId}" {xen:checked '{$socialPermissionSetId} == {$socialForum.social_permission_set_id_th}'} /> {$socialPermissionSet.title}</label>
+			<p class="hint">{$socialPermissionSet.description}</p>
+		</li>
+	</xen:foreach>
+	<xen:if is="!{$socialForum.social_permission_set_id_th} || {$canManageSocialPermissions}">
+		<li>
+			<label for="ctrl_social_permission_set_id_0"><input type="radio" name="social_permission_set_id" value="0" id="ctrl_social_permission_set_id_0" {xen:checked '!{$socialForum.social_permission_set_id_th}'} /> {xen:phrase th_custom_permissions_socialperms}</label>
+			<p class="hint">{xen:phrase th_custom_permissions_explain_socialperms}</p>
+		</li>
+	</xen:if>
+</xen:if>]]></template>
+    <template title="th_social_forum_tools_socialperms" version_id="1379103502" version_string="1.0.2"><![CDATA[<xen:if is="{$canManageSocialPermissions}">
+	<li><a href="{xen:link social-forums/permissions, $socialForum}">{xen:phrase th_manage_social_permissions_socialperms}</a></li>
+</xen:if>]]></template>
+    <template title="th_social_permissions_socialperms" version_id="1380627237" version_string="1.0.2"><![CDATA[<xen:title>{xen:phrase th_social_forum_permissions_socialperms}: {$selectedUserGroup}</xen:title>
+
+<xen:h1>{xen:phrase th_social_forum_permissions_socialperms}: <em>{$selectedUserGroup}</em></xen:h1>
+
+<xen:require css="th_social_permissions_socialperms.css" />
+
+<div class="pageNavLinkGroup">
+	<div class="Popup">
+		<span class="muted">{xen:phrase user_group}:</span>
+		<a rel="Menu">{$selectedUserGroup}</a>
+		<div class="Menu">
+			<div class="primaryContent menuHeader"><h3>{xen:phrase user_group}</h3></div>
+			<ul class="secondaryContent blockLinksList">
+				<xen:hook name="th_social_user_group_popup_socialperms">
+					<li><a href="{xen:link social-forums/permissions/guest, $socialForum}">{xen:phrase th_guest_socialgroups}</a></li>
+					<li><a href="{xen:link social-forums/permissions/member, $socialForum}">{xen:phrase th_member_socialgroups}</a></li>
+					<li><a href="{xen:link social-forums/permissions/moderator, $socialForum}">{xen:phrase th_moderator_socialgroups}</a></li>
+				</xen:hook>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<form method="post" class="AutoValidator"
+	action="{xen:link 'social-forums/permissions/{$socialUserGroup}/save', $socialForum}">
+<div class="sectionMain">
+
+<table class="dataTable socialPermissionsTable">
+
+<colgroup>
+<col style="">
+<col style="width: 10%">
+</colgroup>
+
+<tbody>
+<tr class="dataRow">
+	<th>{xen:phrase permissions}</th>
+	<th class="checkboxColumn">{xen:phrase allow}</th>
+</tr>
+<xen:foreach loop="$permissions" key="$permissionId" value="$permission">
+	<tr class="dataRow">
+		<td><label for="ctrl_permissions_{$permissionId}">{$permission.label}</label></td>
+		<td class="checkboxColumn"><input id="ctrl_permissions_{$permissionId}" type="checkbox" value="1" name="permissions[{$permissionId}]" {xen:checked '{$permission.checked}'} {xen:if '{$permission.disabled}', 'disabled="disabled"'}>
+	</tr>
+</xen:foreach>
+</tbody>
+<tfoot>
+		<tr>
+			<td colspan="4" class="sectionFooter"><input type="submit" value="{xen:phrase th_update_permissions_socialperms}" class="button primary"></td>
+		</tr>
+	</tfoot>
+</table>
+</div>
+<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+    <template title="th_social_permissions_socialperms.css" version_id="1380627237" version_string="1.0.2"><![CDATA[.socialPermissionsTable .checkboxColumn
+{
+	text-align: center;
+}]]></template>
+  </templates>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_socialPerms" description="Copyright notice for [⌂] Social Permissions" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+    <modification template="th_social_forum_fields_socialgroups" modification_key="th_socialForumFields_socialPerms" description="Adds extra social forum status options to social forum editor." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<dt><label>{xen:phrase th_set_social_forum_status_socialgroups}.*)(</ul>)#Us]]></find>
+      <replace><![CDATA[${1}
+<xen:include template="th_social_forum_fields_socialperms" />
+${2}]]></replace>
+    </modification>
+    <modification template="th_social_forum_tools_socialgroups" modification_key="th_socialForumTools_socialPerms" description="Adds permissions links to social forum tools drop-down menu." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:hook name="th_social_forum_tools_socialgroups">.*)(</xen:hook>)#Us]]></find>
+      <replace><![CDATA[${1}
+<xen:include template="th_social_forum_tools_socialperms" />
+${2}]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
